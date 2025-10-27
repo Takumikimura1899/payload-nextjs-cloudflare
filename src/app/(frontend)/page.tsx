@@ -46,6 +46,9 @@ export default async function HomePage() {
           >
             Documentation
           </a>
+          <a className="media" href="/media">
+            Media Gallery
+          </a>
         </div>
       </div>
       <div className="footer">
