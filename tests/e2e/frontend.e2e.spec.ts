@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 
 test.describe('Frontend', () => {
   let page: Page

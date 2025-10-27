@@ -85,7 +85,7 @@ declare abstract class WorkerGlobalScope extends EventTarget<WorkerGlobalScopeEv
 }
 /* [MDN Reference](https://developer.mozilla.org/docs/Web/API/console) */
 interface Console {
-  'assert'(condition?: boolean, ...data: any[]): void
+  assert(condition?: boolean, ...data: any[]): void
   /* [MDN Reference](https://developer.mozilla.org/docs/Web/API/console/clear_static) */
   clear(): void
   /* [MDN Reference](https://developer.mozilla.org/docs/Web/API/console/count_static) */
@@ -380,7 +380,7 @@ declare const performance: Performance
 declare const Cloudflare: Cloudflare
 declare const origin: string
 declare const navigator: Navigator
-interface TestController {}
+type TestController = {}
 interface ExecutionContext<Props = unknown> {
   waitUntil(promise: Promise<any>): void
   passThroughOnException(): void
@@ -522,7 +522,7 @@ type DurableObjectLocationHint =
 interface DurableObjectNamespaceGetDurableObjectOptions {
   locationHint?: DurableObjectLocationHint
 }
-interface DurableObjectClass<_T extends Rpc.DurableObjectBranded | undefined = undefined> {}
+type DurableObjectClass<_T extends Rpc.DurableObjectBranded | undefined = undefined> = {}
 interface DurableObjectState<Props = unknown> {
   waitUntil(promise: Promise<any>): void
   readonly props: Props
@@ -1639,11 +1639,15 @@ interface RequestInit<Cf = CfProperties> {
 }
 type Service<
   T extends
-    | (new (...args: any[]) => Rpc.WorkerEntrypointBranded)
+    | (new (
+        ...args: any[]
+      ) => Rpc.WorkerEntrypointBranded)
     | Rpc.WorkerEntrypointBranded
     | ExportedHandler<any, any, any>
     | undefined = undefined,
-> = T extends new (...args: any[]) => Rpc.WorkerEntrypointBranded
+> = T extends new (
+  ...args: any[]
+) => Rpc.WorkerEntrypointBranded
   ? Fetcher<InstanceType<T>>
   : T extends Rpc.WorkerEntrypointBranded
     ? Fetcher<T>
@@ -2378,7 +2382,7 @@ interface TraceItem {
 interface TraceItemAlarmEventInfo {
   readonly scheduledTime: Date
 }
-interface TraceItemCustomEventInfo {}
+type TraceItemCustomEventInfo = {}
 interface TraceItemScheduledEventInfo {
   readonly scheduledTime: number
   readonly cron: string
@@ -2899,12 +2903,18 @@ interface MessagePortPostMessageOptions {
 }
 type LoopbackForExport<
   T extends
-    | (new (...args: any[]) => Rpc.EntrypointBranded)
+    | (new (
+        ...args: any[]
+      ) => Rpc.EntrypointBranded)
     | ExportedHandler<any, any, any>
     | undefined = undefined,
-> = T extends new (...args: any[]) => Rpc.WorkerEntrypointBranded
+> = T extends new (
+  ...args: any[]
+) => Rpc.WorkerEntrypointBranded
   ? LoopbackServiceStub<InstanceType<T>>
-  : T extends new (...args: any[]) => Rpc.DurableObjectBranded
+  : T extends new (
+        ...args: any[]
+      ) => Rpc.DurableObjectBranded
     ? LoopbackDurableObjectClass<InstanceType<T>>
     : T extends ExportedHandler<any, any, any>
       ? LoopbackServiceStub<undefined>
@@ -7872,7 +7882,7 @@ declare abstract class D1PreparedStatement {
 // but this will ensure type checking on older versions still passes.
 // TypeScript's interface merging will ensure our empty interface is effectively
 // ignored when `Disposable` is included in the standard lib.
-interface Disposable {}
+type Disposable = {}
 /**
  * An email message that can be sent from a Worker.
  */
@@ -8478,20 +8488,48 @@ declare namespace Rpc {
     | Headers
   // Recursively rewrite all `Stubable` types with `Stub`s
   // prettier-ignore
-  type Stubify<T> = T extends Stubable ? Stub<T> : T extends Map<infer K, infer V> ? Map<Stubify<K>, Stubify<V>> : T extends Set<infer V> ? Set<Stubify<V>> : T extends Array<infer V> ? Array<Stubify<V>> : T extends ReadonlyArray<infer V> ? ReadonlyArray<Stubify<V>> : T extends BaseType ? T : T extends {
-        [key: string | number]: any;
-    } ? {
-        [K in keyof T]: Stubify<T[K]>;
-    } : T;
+  type Stubify<T> = T extends Stubable
+    ? Stub<T>
+    : T extends Map<infer K, infer V>
+      ? Map<Stubify<K>, Stubify<V>>
+      : T extends Set<infer V>
+        ? Set<Stubify<V>>
+        : T extends Array<infer V>
+          ? Array<Stubify<V>>
+          : T extends ReadonlyArray<infer V>
+            ? ReadonlyArray<Stubify<V>>
+            : T extends BaseType
+              ? T
+              : T extends {
+                    [key: string | number]: any
+                  }
+                ? {
+                    [K in keyof T]: Stubify<T[K]>
+                  }
+                : T
   // Recursively rewrite all `Stub<T>`s with the corresponding `T`s.
   // Note we use `StubBase` instead of `Stub` here to avoid circular dependencies:
   // `Stub` depends on `Provider`, which depends on `Unstubify`, which would depend on `Stub`.
   // prettier-ignore
-  type Unstubify<T> = T extends StubBase<infer V> ? V : T extends Map<infer K, infer V> ? Map<Unstubify<K>, Unstubify<V>> : T extends Set<infer V> ? Set<Unstubify<V>> : T extends Array<infer V> ? Array<Unstubify<V>> : T extends ReadonlyArray<infer V> ? ReadonlyArray<Unstubify<V>> : T extends BaseType ? T : T extends {
-        [key: string | number]: unknown;
-    } ? {
-        [K in keyof T]: Unstubify<T[K]>;
-    } : T;
+  type Unstubify<T> = T extends StubBase<infer V>
+    ? V
+    : T extends Map<infer K, infer V>
+      ? Map<Unstubify<K>, Unstubify<V>>
+      : T extends Set<infer V>
+        ? Set<Unstubify<V>>
+        : T extends Array<infer V>
+          ? Array<Unstubify<V>>
+          : T extends ReadonlyArray<infer V>
+            ? ReadonlyArray<Unstubify<V>>
+            : T extends BaseType
+              ? T
+              : T extends {
+                    [key: string | number]: unknown
+                  }
+                ? {
+                    [K in keyof T]: Unstubify<T[K]>
+                  }
+                : T
   type UnstubifyAll<A extends any[]> = {
     [I in keyof A]: Unstubify<A[I]>
   }
@@ -8507,7 +8545,11 @@ declare namespace Rpc {
   // Technically, we use custom thenables here, but they quack like `Promise`s.
   // Intersecting with `(Maybe)Provider` allows pipelining.
   // prettier-ignore
-  type Result<R> = R extends Stubable ? Promise<Stub<R>> & Provider<R> : R extends Serializable<R> ? Promise<Stubify<R> & MaybeDisposable<R>> & MaybeProvider<R> : never;
+  type Result<R> = R extends Stubable
+    ? Promise<Stub<R>> & Provider<R>
+    : R extends Serializable<R>
+      ? Promise<Stubify<R> & MaybeDisposable<R>> & MaybeProvider<R>
+      : never
   // Type for method or property on an RPC interface.
   // For methods, unwrap `Stub`s in parameters, and rewrite returns to be `Result`s.
   // Unwrapping `Stub`s allows calling with `Stubable` arguments.
@@ -8536,7 +8578,7 @@ declare namespace Cloudflare {
   // will merge all declarations.
   //
   // You can use `wrangler types` to generate the `Env` type automatically.
-  interface Env {}
+  type Env = {}
   // Project-specific parameters used to inform types.
   //
   // This interface is, again, intended to be declared in project-specific files, and then that
@@ -8555,7 +8597,7 @@ declare namespace Cloudflare {
   //     }
   //
   // You can use `wrangler types` to generate `GlobalProps` automatically.
-  interface GlobalProps {}
+  type GlobalProps = {}
   // Evaluates to the type of a property in GlobalProps, defaulting to `Default` if it is not
   // present.
   type GlobalProp<K extends string, Default> = K extends keyof GlobalProps
@@ -8570,7 +8612,9 @@ declare namespace Cloudflare {
       // If the export is listed in `durableNamespaces`, then it is also a
       // DurableObjectNamespace.
       (K extends GlobalProp<'durableNamespaces', never>
-        ? MainModule[K] extends new (...args: any[]) => infer DoInstance
+        ? MainModule[K] extends new (
+            ...args: any[]
+          ) => infer DoInstance
           ? DoInstance extends Rpc.DurableObjectBranded
             ? DurableObjectNamespace<DoInstance>
             : DurableObjectNamespace<undefined>
